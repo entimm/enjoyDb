@@ -198,7 +198,7 @@ class Model
      */
     protected function partitionMonth($value)
     {
-        return date('Ym', strtotime($value));
+        return preg_match('/^\d{6}$/', $value) ? $value : date('Ym', strtotime($value));
     }
 
     /**

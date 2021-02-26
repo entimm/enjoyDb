@@ -20,7 +20,7 @@ class DB
     private $name;
 
     /**
-     * 重连次数
+     * 总的重连次数
      */
     private $reconnectTimes = 0;
 
@@ -35,7 +35,7 @@ class DB
     private static $reconnectCallback;
 
     /**
-     * 最大重连次数
+     * 单次操作的最大重连次数
      */
     private static $maxReconnectTimes = 1;
 
@@ -143,6 +143,7 @@ class DB
     {
         $start = microtime(true);
 
+        // 单次操作的重试次数
         $retryTimes = 0;
 START:
         try {
@@ -314,7 +315,7 @@ START:
 
         $this->sqlLog('transaction-begin-'.$this->transactionLevel);
 
-        return 1 === $this->transactionLevel ? $this->pdo->beginTransaction() : false;
+        return 1 === $this->transactionLevel ? $this->pdo->beginTransaction() : true;
     }
 
     public function commit()

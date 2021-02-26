@@ -346,7 +346,7 @@ class Builder
     }
 
     /**
-     * 获取一条记录（可直接获取其中的一个字段的值）
+     * 获取一条记录（可直接获取其中的一个字段的值[todo: deprecated]）
      */
     public function first($columns = null)
     {
@@ -361,12 +361,37 @@ class Builder
     }
 
     /**
+     * 获取单个值
+     */
+    public function value($column = null)
+    {
+        $all = $this->limit(1)->all();
+
+        $record = (array)reset($all);
+
+        if ($column) {
+            return isset($record[$column]) ? $record[$column] : false;
+        }
+        return reset($record);
+    }
+
+    /**
+     * 获取单个列
+     */
+    public function column($column, $key = null)
+    {
+        $all = $this->all();
+
+        return array_column($all, $column, $key);
+    }
+
+    /**
      * 根据id获取记录（可获取多个）
      */
     public function find($id)
     {
         if (is_array($id)) {
-            $this->whereIn('id', $id)->all();
+            return $this->whereIn('id', $id)->all();
         }
 
         return $this->where('id', $id)->first();
@@ -479,7 +504,7 @@ class Builder
      */
     public function setWhere(Condition $condition)
     {
-        $this->where = $condition;
+        $this->condition = $condition;
 
         return $this;
     }

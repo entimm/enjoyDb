@@ -238,7 +238,7 @@ class Compile
      */
     protected function delete($component)
     {
-        return 'DELETE '.$this->columnize($component);
+        return 'DELETE FROM '.$this->columnize($component);
     }
 
     /**
