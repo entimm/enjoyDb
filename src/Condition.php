@@ -23,7 +23,7 @@ class Condition
             return $this;
         }
 
-        if (is_callable($column)) {
+        if ($column instanceof \Closure) {
             call_user_func($column, $newCondition = new static);
             $this->elements[] = new Element($newCondition->elements, 'complex', $logic);
 

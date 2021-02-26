@@ -86,7 +86,7 @@ class Builder
      */
     public function where($column, $operator = null, $value = null, $logic = 'AND')
     {
-        if (is_callable($column)) {
+        if ($column instanceof \Closure) {
             call_user_func($column, $newBuilder = new static);
             $this->condition->add($newBuilder->condition, null, null, $logic);
 
