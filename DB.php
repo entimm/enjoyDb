@@ -207,23 +207,7 @@ START:
             return null;
         }
 
-        $bindings = $log['bindings'];
-        foreach ($bindings as $i => $binding) {
-            if ($binding instanceof \DateTime) {
-                $bindings[$i] = $binding->format('\'Y-m-d H:i:s\'');
-            } else {
-                if (is_string($binding)) {
-                    $bindings[$i] = "'$binding'";
-                } elseif (is_bool($binding)) {
-                    $bindings[$i] = (int) $binding;
-                }
-            }
-        }
-
-        $sql = str_replace(array('%', '?'), array('%%', '%s'), $log['sql']);
-        $sql = vsprintf($sql, $bindings);
-
-        return $sql;
+        return Compile::replaceBindings($log['sql'], $log['bindings']);
     }
 
     /**

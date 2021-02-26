@@ -9,7 +9,7 @@ class Compile
 {
     private $bindings = [];
 
-    protected $queryComponents = [
+    const COMPONENTS_MAP_ALL = [
         'select' => 'columns',
         'from' => 'table',
         'forceIndex' => 'forceIndex',
@@ -20,27 +20,47 @@ class Compile
         'limit' => 'limit',
         'offset' => 'offset',
         'lock' => 'lock',
-    ];
-
-    protected $updateComponents = [
         'update' => 'table',
         'set' => 'data',
-        'where' => 'condition',
-    ];
-
-    protected $insertComponents = [
         'insert' => 'table',
         'columnRecords' => 'data',
-    ];
-
-    protected $replaceComponents = [
         'replace' => 'table',
-        'columnRecords' => 'data',
+        'delete' => 'table',
     ];
 
-    protected $deleteComponents = [
-        'delete' => 'table',
-        'where' => 'condition',
+    const COMPONENTS_QUERY = [
+        'select',
+        'from',
+        'forceIndex',
+        'where',
+        'group',
+        'having',
+        'order',
+        'limit',
+        'offset',
+        'lock',
+    ];
+
+    const COMPONENTS_UPDATE = [
+        'update',
+        'set',
+        'where',
+        'limit',
+    ];
+
+    const COMPONENTS_INSERT = [
+        'insert',
+        'columnRecords',
+    ];
+
+    const COMPONENTS_REPLACE = [
+        'replace',
+        'columnRecords',
+    ];
+
+    const COMPONENTS_DELETE = [
+        'delete',
+        'where',
     ];
 
     /**
@@ -48,7 +68,7 @@ class Compile
      */
     public function resolveQuery(Builder $builder)
     {
-        return $this->resolve($this->queryComponents, $builder);
+        return $this->resolve($this->componentsMap(self::COMPONENTS_QUERY), $builder);
     }
 
     /**
@@ -56,7 +76,7 @@ class Compile
      */
     public function resolveUpdate(Builder $builder)
     {
-        return $this->resolve($this->updateComponents, $builder);
+        return $this->resolve($this->componentsMap(self::COMPONENTS_UPDATE), $builder);
     }
 
     /**
@@ -64,7 +84,7 @@ class Compile
      */
     public function resolveDelete(Builder $builder)
     {
-        return $this->resolve($this->deleteComponents, $builder);
+        return $this->resolve($this->componentsMap(self::COMPONENTS_DELETE), $builder);
     }
 
     /**
@@ -72,7 +92,7 @@ class Compile
      */
     public function resolveInsert(Builder $builder)
     {
-        return $this->resolve($this->insertComponents, $builder);
+        return $this->resolve($this->componentsMap(self::COMPONENTS_INSERT), $builder);
     }
 
     /**
@@ -80,13 +100,13 @@ class Compile
      */
     public function resolveReplace(Builder $builder)
     {
-        return $this->resolve($this->replaceComponents, $builder);
+        return $this->resolve($this->componentsMap(self::COMPONENTS_REPLACE), $builder);
     }
 
     /**
      * 核心解析方法
      */
-    protected function resolve(array $components, Builder $builder)
+    public function resolve(array $components, Builder $builder)
     {
         $segments = [];
         foreach ($components as $method => $name) {
@@ -99,6 +119,15 @@ class Compile
         }
 
         return $this->implode($segments);
+    }
+
+    protected function componentsMap($keys)
+    {
+        return array_reduce($keys, function ($result, $item) {
+            $result[$item] = self::COMPONENTS_MAP_ALL[$item];
+
+            return $result;
+        });
     }
 
     /**
@@ -327,5 +356,39 @@ class Compile
         $this->bindings[] = $value;
 
         return '?';
+    }
+
+    /**
+     * 转化成sql语句
+     */
+    public function toSql(array $components, Builder $builder)
+    {
+        $sql = $this->resolve($this->componentsMap($components), $builder);
+
+        $bindings = $this->getBindings();
+
+        return self::replaceBindings($sql, $bindings);
+    }
+
+    /**
+     * 替换binding参数
+     */
+    public static function replaceBindings($sql, array $bindings)
+    {
+        foreach ($bindings as $i => $binding) {
+            if ($binding instanceof \DateTime) {
+                $bindings[$i] = $binding->format('\'Y-m-d H:i:s\'');
+            } else {
+                if (is_string($binding)) {
+                    $bindings[$i] = "'$binding'";
+                } elseif (is_bool($binding)) {
+                    $bindings[$i] = (int) $binding;
+                }
+            }
+        }
+
+        $sql = str_replace(array('%', '?'), array('%%', '%s'), $sql);
+
+        return vsprintf($sql, $bindings);
     }
 }

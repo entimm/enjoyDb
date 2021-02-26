@@ -115,4 +115,16 @@ class Condition
             $bindings,
         ];
     }
+
+    /**
+     * 解析成sql
+     *
+     * @return String
+     */
+    public function toSql()
+    {
+        list($sql, $bindings) = $this->resolve();
+
+        return Compile::replaceBindings($sql, $bindings);
+    }
 }

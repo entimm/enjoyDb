@@ -573,4 +573,24 @@ class Builder
     {
         return new DbTravel($this);
     }
+
+    /**
+     * 获得Condition
+     *
+     * @return Condition
+     */
+    public function getCondition()
+    {
+        return $this->condition;
+    }
+
+    /**
+     * 解析成sql
+     *
+     * @return String
+     */
+    public function toSql(array $components)
+    {
+        return (new Compile)->toSql($components, $this);
+    }
 }
