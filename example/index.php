@@ -13,7 +13,7 @@ $dbManager = new DbManager(function ($name) {
         'user' => 'root',
         'pwd' => 'root',
         'charset' => 'utf8',
-        'prefix' => 'oh',
+        'prefix' => 't',
     ];
 });
 echo '<pre>';
@@ -23,7 +23,7 @@ $db = DB::connection('test');
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $createTableSql = <<<EOT
-CREATE TABLE IF NOT EXISTS `oh_test` (
+CREATE TABLE IF NOT EXISTS `t_index` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL DEFAULT '',
   `age` int(11) DEFAULT NULL,
@@ -34,14 +34,14 @@ CREATE TABLE IF NOT EXISTS `oh_test` (
 EOT;
 $db->exec($createTableSql);
 
-$affectNum = $db->exec('truncate oh_test');
+$affectNum = $db->exec('truncate t_index');
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 echo 'num = '.$affectNum.PHP_EOL;
 echo PHP_EOL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$affectNum = $db->table('test')->insert([
+$affectNum = $db->table('index')->insert([
     ['name' => '韩梅梅', 'age' => 20],
     ['name' => '李蕾', 'age' => 25],
     ['name' => 'jerry', 'age' => 25],
@@ -64,13 +64,13 @@ echo PHP_EOL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$affectNum = $db->table('test')->insert(['name' => '赵丽颖', 'age' => 30]);
+$affectNum = $db->table('index')->insert(['name' => '赵丽颖', 'age' => 30]);
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 echo 'num = '.$affectNum.PHP_EOL;
 echo 'insertId = '.$db->lastInsertId().PHP_EOL;
 echo PHP_EOL;
 
-$id = $db->table('test')->insertGetId(['name' => '刘亦菲', 'age' => 32]);
+$id = $db->table('index')->insertGetId(['name' => '刘亦菲', 'age' => 32]);
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 echo 'insertId = '.$id.PHP_EOL;
 echo 'insertId = '.$db->lastInsertId().PHP_EOL;
@@ -78,7 +78,7 @@ echo PHP_EOL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$affectNum = $db->table('test')->where('name', 'lily')->update(['age' => 21]);
+$affectNum = $db->table('index')->where('name', 'lily')->update(['age' => 21]);
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 echo 'num = '.$affectNum.PHP_EOL;
 echo PHP_EOL;
@@ -86,7 +86,7 @@ echo PHP_EOL;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $withYoung = true;
-$data = $db->table('test')
+$data = $db->table('index')
 ->select('name', 'age')->addSelect('id')
 ->where(Raw::make('age > ?', 15))
 ->where([
@@ -121,14 +121,14 @@ echo PHP_EOL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$data = $db->table('test')->where('age', false)->where('age', true)->first();
+$data = $db->table('index')->where('age', false)->where('age', true)->first();
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 var_dump($data);
 echo PHP_EOL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$data = $db->table('test')->where([
+$data = $db->table('index')->where([
     ['age', 'in', [20, 25, 30]],
     ['age', 'between', [20, 30]],
     ['name', 'is not null'],
@@ -140,28 +140,28 @@ echo PHP_EOL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$data = $db->table('test')->select('*')->find(10);
+$data = $db->table('index')->select('*')->find(10);
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 var_dump($data);
 echo PHP_EOL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$data = $db->table('test')->where('age', '>=', 20)->first();
+$data = $db->table('index')->where('age', '>=', 20)->first();
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 var_dump($data);
 echo PHP_EOL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$data = $db->table('test')->select('age', Raw::make('count(*) as count'))->groupBy('age')->having(Raw::make('count(*) > ?', 1))->all();
+$data = $db->table('index')->select('age', Raw::make('count(*) as count'))->groupBy('age')->having(Raw::make('count(*) > ?', 1))->all();
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 var_dump($data);
 echo PHP_EOL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$data = $db->table('test')->forceIndex('idx_age')->select('age')->groupBy(['age', 'id'])->orderBy(['age' => 'ASC', 'id' => 'DESC'])->all();
+$data = $db->table('index')->forceIndex('idx_age')->select('age')->groupBy(['age', 'id'])->orderBy(['age' => 'ASC', 'id' => 'DESC'])->all();
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 var_dump($data);
 echo PHP_EOL;
@@ -169,21 +169,21 @@ echo PHP_EOL;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $db->transaction(function (DB $db) {
-    echo $db->inTransaction() ? 'in transaction' : 'not in transaction';
-    $db->table('test')->insert( ['name' => 't1', 'age' => 100]);
-    $db->table('test')->insert( ['name' => 't2', 'age' => 100]);
+    echo $db->inTransaction() ? 'in transaction' : 'not in transaction', PHP_EOL;
+    $db->table('index')->insert( ['name' => 't1', 'age' => 100]);
+    $db->table('index')->insert( ['name' => 't2', 'age' => 100]);
 });
-$result = $data = $db->table('test')->where('age', 100)->all();
+$result = $data = $db->table('index')->where('age', 100)->all();
 var_dump($result);
 
 try {
     $db->transaction(function (DB $db) {
-        $db->table('test')->where('name', 't1')->update( ['age' => 120]);
-        $db->table('test')->where('name', 't2')->update( ['age' => 120]);
+        $db->table('index')->where('name', 't1')->update( ['age' => 120]);
+        $db->table('index')->where('name', 't2')->update( ['age' => 120]);
         throw new Exception('error happen！');
     });
 } catch (Exception $e) {
-    $result = $data = $db->table('test')->whereIn('age', [100, 120])->all();
+    $result = $data = $db->table('index')->whereIn('age', [100, 120])->all();
     echo $e->getMessage().PHP_EOL;
     var_dump($result);
 }
@@ -191,17 +191,17 @@ try {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $name = "lucy' or 1 = 1#";
-$result = $db->query("SELECT * FROM `oh_test` WHERE `name` = '{$name}' AND `age` = 27");
+$result = $db->query("SELECT * FROM `t_index` WHERE `name` = '{$name}' AND `age` = 27");
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 var_dump($result);
 
-$result = $db->tableNoPrefix('oh_test')->where('name', $name)->where('age', 27)->all();
+$result = $db->tableNoPrefix('t_index')->where('name', $name)->where('age', 27)->all();
 echo 'sql = '.$db->getLastSql().PHP_EOL;
 var_dump($result);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$builder = $db->table('test');
+$builder = $db->table('index');
 $builder->where('age', '10')->where('name', 'test1')->orderBy('id');
 
 $builder->deepClone()->where('age', '20')->where('name', 'test2')->all();
