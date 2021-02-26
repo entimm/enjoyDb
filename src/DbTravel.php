@@ -1,6 +1,6 @@
 <?php
 
-namespace Ohmydb;
+namespace EnjoyDb;
 
 /**
  * 数据库遍历器

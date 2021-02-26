@@ -1,6 +1,6 @@
 <?php
 
-namespace Ohmydb;
+namespace EnjoyDb;
 
 /**
  * 可绑定的数据原始sql

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ohmydb;
+namespace EnjoyDb;
 
 /**
  * 条件的组成部件，可自我嵌套

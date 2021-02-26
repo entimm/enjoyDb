@@ -1,6 +1,6 @@
 <?php
 
-namespace Ohmydb;
+namespace EnjoyDb;
 
 /**
  * 条件构造器，可脱离Builder单独使用（只构造条件）

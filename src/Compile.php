@@ -1,6 +1,6 @@
 <?php
 
-namespace Ohmydb;
+namespace EnjoyDb;
 
 /**
  * 编译组装sql
