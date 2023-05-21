@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * sql查询快速构建示例
+ */
+
 use EnjoyDb\DB;
 use EnjoyDb\DbManager;
 use EnjoyDb\Raw;

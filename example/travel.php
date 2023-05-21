@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * sql数据遍历示例
+ */
+
 use EnjoyDb\DB;
 use EnjoyDb\DbManager;
 use EnjoyDb\DbTravel;

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * 使用model示例
+ */
+
 use EnjoyDb\DB;
 use EnjoyDb\DbManager;
 use EnjoyDb\Model;
